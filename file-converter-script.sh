@@ -88,11 +88,14 @@ filelist=$(yad --title="$TITLE" --image="info" --center \
 #  2) Use preferred file manager.
 #  3) Use a "Find" utility (both in the file manager / others like Catfish).
 
-# Accept only paths starting with "/"
-if [ -n "$(echo "$filelist" | sed '/^\//d')" ] ; then
-    yad_show_info "Please select only valid files."
-    exit 1
-fi
+# Accept only valid filenames
+while read file ; do
+    if [ -f "$file" ] && [ -r "$file" ] ; then
+        true
+    else
+        yad_show_info "Please select valid and readable files"
+        exit 1
+done < <(echo "$filelist")
 
 if [ -z "$filelist" ] ; then
     yad_show_info "You have not selected any files.\n Please run again."
