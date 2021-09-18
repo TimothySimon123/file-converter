@@ -223,10 +223,14 @@ if [ -z "$OUT_FORMAT" ] ; then
     exit 1
 fi
 
+# cd to $HOME before showing folder selection dialog.
+# Otherwise, it opens this app's directory to choose folders.
+cd "$HOME"
 dest_dir=$(yad --title="$TITLE" --image="info" --center \
     --text="\nPlease choose the DESTINATION FOLDER\n" \
     --width=600 --height=400 \
     --file --directory || echo "EXIT NOW")
+cd -
 
 # Exit on pressing Cancel/Close button.
 [ "$RESP" = "EXIT NOW" ] && exit 1
