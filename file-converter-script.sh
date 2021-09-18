@@ -88,6 +88,11 @@ filelist=$(yad --title="$TITLE" --image="info" --center \
 #  2) Use preferred file manager.
 #  3) Use a "Find" utility (both in the file manager / others like Catfish).
 
+if [ -z "$filelist" ] ; then
+    yad_show_info "You have not selected any files.\n Please run again."
+    exit 1
+fi
+
 # Accept only valid filenames
 while read file ; do
     if [ -f "$file" ] && [ -r "$file" ] ; then
@@ -95,12 +100,9 @@ while read file ; do
     else
         yad_show_info "Please select valid and readable files"
         exit 1
+    fi
 done < <(echo "$filelist")
 
-if [ -z "$filelist" ] ; then
-    yad_show_info "You have not selected any files.\n Please run again."
-    exit 1
-fi
 
 # Detect the input file formats (extension) -- converted to lowercase for case-insensitivity
 IN_FORMATS="$(echo "$filelist" | grep '\.' | sed 's/^.*\.//g' | tr A-Z a-z | sed 's/^$//g' | sort -u)"
