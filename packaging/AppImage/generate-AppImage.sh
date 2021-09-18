@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Generate an x86_64 AppImage
-# The real converter should be installed previously on the system
+# This AppImage includes only the app and yad.
+# The real converters (convert-im6.q16 , pdftoppm , ffmpeg) should be installed on the system in order to convert the corresponding formats.
 # This is just the GUI. The real work is done by commands available on the system.
 
 # cd to the directory this script is located in
