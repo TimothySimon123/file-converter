@@ -1,0 +1,9 @@
+#!/bin/sh
+# Just a wrapper to call file-converter-script in x-terminal-emulator if it is available, else as a normal script
+HERE="$(dirname "$(readlink -f "${0}")")"
+if which x-terminal-emulator > /dev/null ; then
+    x-terminal-emulator -e "$HERE"/file-converter-script.sh
+else
+    "$HERE"/file-converter-script.sh
+fi
+exit 0
