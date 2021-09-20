@@ -22,11 +22,15 @@ chmod 755 ../../file-converter-script.sh
 cp -a ../../file-converter-script.sh file-converter/usr/bin/
 
 echo "Copy icon"
+chmod 644 ../../file-converter.png
 cp -a ../../file-converter.png file-converter/usr/share/icons/hicolor/256x256/apps/
 
 echo "Make executable and copy .desktop file"
 chmod 755 ../../file-converter.desktop
 cp -a ../../file-converter.desktop file-converter/usr/share/applications/
+
+echo "Make postinst executable"
+chmod 755 file-converter/DEBIAN/postinst
 
 dpkg-deb --build file-converter
 
