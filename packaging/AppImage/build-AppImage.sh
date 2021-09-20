@@ -5,6 +5,8 @@
 # The real converters (convert-im6.q16 , pdftoppm , ffmpeg) should be installed on the system in order to convert the corresponding formats.
 # This is just the GUI. The real work is done by commands available on the system.
 
+set -e
+
 # cd to the directory this script is located in
 cd "$(dirname "$(readlink -f "${0}")")"
 
