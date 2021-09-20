@@ -1,0 +1,12 @@
+Package: file-converter
+Version: 0.2.0
+Architecture: all
+Maintainer: Timothy Simon <timothysimon@tutanota.com>
+Installed-Size: 25
+Depends: bash (>= 4.4), grep (>= 2.27), yad (>= 0.38.2), poppler-utils (>= 0.48.0), imagemagick (>= 6.9.7), ffmpeg (>= 3.2.15)
+Section: utils
+Priority: optional
+Homepage: https://github.com/TimothySimon123/file-converter
+Description: Convert between various file formats
+ file-converter allows you to convert various
+ Image, Audio, Video and PDF formats.
