@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=file-converter
-Comment=Convert between various file formats
-Exec=file-converter
-Icon=file-converter
-Categories=Settings;GNOME;GTK;
-Name[en_US.UTF-8]=file-converter
