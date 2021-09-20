@@ -24,13 +24,13 @@ chmod 755 ../../file-converter-script.sh
 cp -a ../../file-converter-script.sh AppDir/usr/bin/
 
 echo "Copy icon"
-cp -a ./file-converter.png AppDir/
-cp -a ./file-converter.png AppDir/usr/share/icons/hicolor/256x256/apps/
+cp -a ../../file-converter.png AppDir/
+cp -a ../../file-converter.png AppDir/usr/share/icons/hicolor/256x256/apps/
 
 echo "Make executable and copy .desktop file"
-chmod 755 file-converter.desktop
-cp -a ./file-converter.desktop AppDir/
-cp -a ./file-converter.desktop AppDir/usr/share/applications/
+chmod 755 ../../file-converter.desktop
+cp -a ../../file-converter.desktop AppDir/
+cp -a ../../file-converter.desktop AppDir/usr/share/applications/
 
 # AppRun was downloaded from:
 # https://github.com/AppImage/AppImageKit/releases/download/13/AppRun-x86_64
