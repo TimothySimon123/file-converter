@@ -1,0 +1,6 @@
+#!/bin/sh
+
+chmod 755 /usr/bin/file-converter
+chmod 755 /usr/bin/file-converter-script.sh
+
+exit 0
