@@ -22,7 +22,7 @@ pdftoppm -singlefile -jpeg "$1" "$(echo "$2" | sed 's/\.jpg-OnlyFirstPage$//g')"
 }
 
 yad_show_info() {
-    yad --image "info" --title "$TITLE" --center --width=360 --height=240 --text="$@" 2> /dev/null
+    yad --image "info" --title "$TITLE" --center --width=360 --height=240 --text="$@"
 }
 
 yad_show_error_incompatible_format() {
