@@ -5,6 +5,7 @@ A simple app to convert between various file formats.
 - Supports batch conversion of multiple files
 - Drag N Drop functionality
 - Works on almost any Linux distro
+- Progress bar
 
 These formats and their equivalents are supported:
 1) PDF
