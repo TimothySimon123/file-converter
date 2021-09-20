@@ -1,31 +1,31 @@
 #!/bin/bash
 
 export TITLE="file-converter"
-export APP_VERSION="alpha 0.1"
+export APP_VERSION="beta 0.2"
 
 HERE="$(dirname "$(readlink -f "${0}")")"
 
-function file-converter-pdf2jpg {
+file-converter-pdf2jpg() {
 pdftoppm -jpeg "$1" "$(echo "$2" | sed 's/\.jpg$//g')"
 }
 
-function file-converter-pdf2png {
+file-converter-pdf2png() {
 pdftoppm -png "$1" "$(echo "$2" | sed 's/\.png$//g')"
 }
 
-function file-converter-pdf2tiff {
+file-converter-pdf2tiff() {
 pdftoppm -tiff "$1" "$(echo "$2" | sed 's/\.tiff$//g')"
 }
 
-function file-converter-pdf2jpg-OnlyFirstPage {
+file-converter-pdf2jpg-OnlyFirstPage() {
 pdftoppm -singlefile -jpeg "$1" "$(echo "$2" | sed 's/\.jpg-OnlyFirstPage$//g')"
 }
 
-function yad_show_info {
-    yad --image "info" --title "$TITLE" --center --width=360 --height=240 --text="$@"
+yad_show_info() {
+    yad --image "info" --title "$TITLE" --center --width=360 --height=240 --text="$@" 2> /dev/null
 }
 
-function yad_show_error_incompatible_format {
+yad_show_error_incompatible_format() {
 yad_show_info 'Please use supported and compatible formats.
 
 These formats and their equivalents are supported:
@@ -39,6 +39,27 @@ These formats and their equivalents are supported:
 '
 
 exit 1
+}
+
+# This function is forked from main.
+# So, it can't read progress from a variable.
+# So, we're using a file to relay progress from main to the progress meter.
+progress-bar-monitor_progress() {
+    # Continue monitoring while /tmp/file-converter-progress-bar exists.
+    # Prints progress to stdout (piped to yad --progress)
+    while [ -f /tmp/file-converter-progress-bar ] ; do
+        # Update the reading if it changes since last update.
+        current_progress="$(cat /tmp/file-converter-progress-bar)"
+        if [ "$current_progress" != "$progress_bar_reading" ] ; then
+            progress_bar_reading="$current_progress"
+            echo "$progress_bar_reading"
+        fi
+        # Take a break to avoid excess load.
+        sleep 0.5 
+    done
+    # Ensure that the progress bar closes if /tmp/file-converter-progress-bar is removed.
+    echo "100"
+    echo ""
 }
 
 echo ""
@@ -79,14 +100,18 @@ fi
 # TODO: Support mtp:// , smb:// etc.,
 filelist=$(yad --title="$TITLE" --image="info" --center \
     --width=360 --height=240 \
-    --text "Welcome to file-converter version ${APP_VERSION}\n\nPlease DRAG AND DROP files here , then CLICK OK\n\n Note that you need not do anything on the terminal that just came up." \
+    --text "Welcome to file-converter version ${APP_VERSION}\n\nPlease DRAG AND DROP files here , then CLICK OK\n\nYou need not do anything in the terminal that just came up." \
     --button=gtk-ok:0 \
-    --dnd --cmd echo "$1" | sed 's/^file\:\/\///' )
+    --dnd \
+    --cmd echo "$1" | sed 's/^file\:\/\///' )
 
 # I think Drag-N-Drop is better than file selection (for multiple files) because we can:
 #  1) Select files from different folders.
 #  2) Use preferred file manager.
 #  3) Use a "Find" utility (both in the file manager / others like Catfish).
+
+# Remove duplicate from the dragged and dropped files.
+filelist="$(echo "$filelist" | sort -u)"
 
 if [ -z "$filelist" ] ; then
     yad_show_info "You have not selected any files.\n Please run again."
@@ -103,7 +128,6 @@ while read file ; do
     fi
 done < <(echo "$filelist")
 
-
 # Detect the input file formats (extension) -- converted to lowercase for case-insensitivity
 IN_FORMATS="$(echo "$filelist" | grep '\.' | sed 's/^.*\.//g' | tr A-Z a-z | sed 's/^$//g' | sort -u)"
 
@@ -113,7 +137,9 @@ IN_FORMATS="$(echo "$filelist" | grep '\.' | sed 's/^.*\.//g' | tr A-Z a-z | sed
 IN_FORMAT=""
 IN_FORMAT_TYPE_PREVIOUS=""
 
-# The trailing \! is intentional (so that a regex can match all formats equally).
+# "\!" is for the yad combobox.
+# The trailing "\!" is intentional (so that a regex can match all formats equally).
+
 # Ref: https://en.wikipedia.org/wiki/Image_file_formats
 IMAGE_FILE_FORMATS="jpg\!png\!tiff\!bmp\!gif\!heic\!webp\!"
 
@@ -168,12 +194,12 @@ while read IN_FORMAT ; do
         fi
     elif echo "$IMAGE_FILE_FORMATS" | grep "${IN_FORMAT}\\\!" ; then
         IN_FORMAT_TYPE="IMAGE"
-        # All image file conversions use convert-im6
-        CONVERTER_COMMAND="convert-im6"
+        # All image file conversions use convert-im6.q16
+        CONVERTER_COMMAND="convert-im6.q16"
         AVAILABLE_OUT_FORMATS="$IMAGE_FILE_FORMATS"
         # Exit with error message if the converter is not available
-        if ! which convert-im6 > /dev/null ; then
-            yad_show_info "To convert images, please install 'imagemagick' from the software store OR with the command\nsudo apt update && sudo apt install imagemagick"
+        if ! which convert-im6.q16 > /dev/null ; then
+            yad_show_info "To convert images, please install 'imagemagick' from the software store\nOR with the command\nsudo apt update && sudo apt install imagemagick"
             exit 1
         fi
 
@@ -184,7 +210,7 @@ while read IN_FORMAT ; do
         AVAILABLE_OUT_FORMATS="$AUDIO_FILE_FORMATS"
         # Exit with error message if the converter is not available
         if ! which sox > /dev/null ; then
-            yad_show_info "To convert audio, please install 'sox' from the software store \n OR with the command\nsudo apt update && sudo apt install sox"
+            yad_show_info "To convert audio, please install 'sox' from the software store\nOR with the command\nsudo apt update && sudo apt install sox"
             exit 1
         fi
     elif echo "$VIDEO_FILE_FORMATS" | grep "${IN_FORMAT}\\\!" ; then
@@ -194,7 +220,7 @@ while read IN_FORMAT ; do
         AVAILABLE_OUT_FORMATS="$VIDEO_FILE_FORMATS"
         # Exit with error message if the converter is not available
         if ! which ffmpeg > /dev/null ; then
-            yad_show_info "To convert videos, please install 'ffmpeg' from the software store \n OR with the command\nsudo apt update && sudo apt install ffmpeg"
+            yad_show_info "To convert videos, please install 'ffmpeg' from the software store\nOR with the command\nsudo apt update && sudo apt install ffmpeg"
             exit 1
         fi
     else
@@ -202,7 +228,7 @@ while read IN_FORMAT ; do
     fi
     
     # If this is not the first iteration of this while loop, check for incompatibilities between input formats.
-    # Ie. if we're trying to convert a video to a pdf , image to audio etc., then show an error message and exit.
+    # Example: pdf and mp4 , jpg and mp3 etc., are incompatible.
     [ -n "$IN_FORMAT_TYPE_PREVIOUS" ] && [ "$IN_FORMAT_TYPE_PREVIOUS" != "$IN_FORMAT_TYPE" ] && yad_show_error_incompatible_format
     
     # Store this format as the previous format , getting ready for the next iteration.
@@ -235,7 +261,7 @@ dest_dir=$(yad --title="$TITLE" --image="info" --center \
     --text="\nPlease choose the DESTINATION FOLDER\n" \
     --width=600 --height=400 \
     --file --directory || echo "EXIT NOW")
-cd -
+cd - > /dev/null
 
 # Exit on pressing Cancel/Close button.
 [ "$RESP" = "EXIT NOW" ] && exit 1
@@ -247,8 +273,13 @@ if ! mkdir "$dest_dir" ; then
     exit 1
 fi
 
-# I think that progress bars are a bit problematic. We're including a Terminal-based progress indication in the helper script
-# yad --title "$TITLE" --progress --width 360 --text="Converting..... Please wait" --percentage=0 --auto-close --no-button
+rm -rf /tmp/file-converter-progress-bar
+echo "0" > /tmp/file-converter-progress-bar
+
+progress-bar-monitor_progress | \
+    yad --title "$TITLE" --center --progress --width 540 \
+        --text="Converting..... Please wait. \n You need not do anything in the terminal that just came up.\nfile-converter does that for you :)\nTo abort, close that terminal window." \
+        --percentage=0 --auto-close --no-button &
 
 echo ""
 echo "$FILE_COUNT files going to be converted"
@@ -274,41 +305,50 @@ while read file ; do
     FILE_NUM=0
     while [ -e "$dest_dir"/"$file_name_out".$OUT_FORMAT ] ; do
         [ "$FILE_NUM" != "0" ] && file_name_out="${file_name_out%.*}" # Remove extension if we're running the second or subsequent time.
-        file_name_out="${file_name_out}.samename-${FILE_NUM}" # Add extension with a number
+        file_name_out="${file_name_out}.(${FILE_NUM})" # Add extension with a number
         # BTW how I miss C++'s FILE_NUM++;
         FILE_NUM=$((${FILE_NUM}+1))
     done
     
+    echo ""
+    echo "Converting $file ....."
+    
     if [ -z "$(echo "$file" | tr A-Z a-z | sed "/\.${OUT_FORMAT}$/d")" ] ; then
-        # Just copy the file if the source and destination formats are same (case-insensitive match)
+        # Just copy the file if the source and destination extensions are same (case-insensitive match)
         cp "$file" "$dest_dir"/"$file_name_out".$OUT_FORMAT
         SUCCESS_COUNT=$((${SUCCESS_COUNT}+1))
+        echo "$file is already in output format. Just copying it."
     else
         # Otherwise, do the real conversion
-        echo ""
-        echo "Converting $file ....."
         if ${CONVERTER_COMMAND} "$file" "$dest_dir"/"$file_name_out".$OUT_FORMAT ; then
             echo "$file successfully converted"
             SUCCESS_COUNT=$((${SUCCESS_COUNT}+1))
         else
             echo "Failed to convert $file" | tee -a "$dest_dir"/file-converter-errors.log
         fi
-        # BTW how I miss python's and C/C++'s math.
-        percent_done=$(((100*${SUCCESS_COUNT})/${FILE_COUNT}))
-        # TODO: make the percentage show as a progress bar (like apt and wget do)
-        echo ""
-        echo "$percent_done % done ; $SUCCESS_COUNT / $FILE_COUNT files processed."
-        echo ""
     fi
+    # BTW how I miss python's and C/C++'s math.
+    percent=$(((100*${SUCCESS_COUNT})/${FILE_COUNT}))
+    # TODO: make the percentage show as a progress bar (like apt and wget do)
+    echo ""
+    echo "$percent % done ; $SUCCESS_COUNT / $FILE_COUNT files processed."
+    echo ""
+    # This is for the progress bar to read.
+    echo "$percent" > /tmp/file-converter-progress-bar
 done < <(echo "$filelist")
+
+# Close the progress bar
+rm -f /tmp/file-converter-progress-bar
 
 # Show message for success / failure
 if [ "$SUCCESS_COUNT" != "$FILE_COUNT" ] ; then
     yad_show_info "Error. Could not convert all files.\n Error log is at $dest_dir/file-converter-errors.log"
     xdg-open "$dest_dir" &
+    sleep 1 # Wait for the file manager to open
 else
     yad_show_info "Success - all the files have been converted.\n Press OK to see them." || exit 0
     xdg-open "$dest_dir" &
+    sleep 1
     exit 0
 fi
 
