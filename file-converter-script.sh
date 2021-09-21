@@ -100,7 +100,7 @@ fi
 # TODO: Support mtp:// , smb:// etc.,
 filelist=$(yad --title="$TITLE" --image=tap-create --center \
     --width=360 --height=240 \
-    --text "Welcome to file-converter version ${APP_VERSION}\n\n<b>Please DRAG AND DROP files here , then CLICK OK<b>\n\nYou need not do anything in the terminal that just came up." --text-align=center \
+    --text "Welcome to file-converter version ${APP_VERSION}\n\n<b>Please DRAG AND DROP files here , then CLICK OK</b>\n\nYou need not do anything in the terminal that just came up." --text-align=center \
     --button=gtk-ok:0 \
     --dnd \
     --cmd echo "$1" | sed 's/^file\:\/\///' )
