@@ -1,0 +1,5 @@
+file-converter.desktop usr/share/applications/
+file-converter.png usr/share/pixmaps/
+file-converter.png usr/share/icons/hicolor/256x256/apps/
+file-converter usr/bin/
+file-converter-script.sh usr/bin
