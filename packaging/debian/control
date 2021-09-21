@@ -1,0 +1,32 @@
+Source: file-converter
+Section: utils
+Priority: optional
+Maintainer: Timothy Simon <timothysimon@tutanota.com>
+Build-Depends: debhelper-compat (= 13)
+Rules-Requires-Root: no
+Standards-Version: 4.3.0
+Homepage: https://github.com/TimothySimon123/file-converter
+
+Package: file-converter
+Architecture: all
+Depends: bash (>= 4.4),
+         grep (>= 2.27),
+         yad (>= 0.38.2),
+         poppler-utils (>= 0.48.0),
+         imagemagick (>= 6.9.7),
+         ffmpeg (>= 3.2.15)
+Description: Convert between various file formats
+ file-converter allows you to easily convert various Image, Audio, Video and PDF 
+ formats.
+ .
+ Features:
+ • Supports batch conversion of multiple files
+ • File Drag N Drop functionality
+ • Common runtime dependencies - works on almost any Linux distro
+ • Completion progress bar
+ .
+ file-converter can convert:
+ • PDF: to jpg, png, tiff
+ • Images: jpg, png, tiff, bmp, heic
+ • Audio: aiff aiffc au amr-nb amr-wb cdda flac gsm mp3 ogg opus and more
+ • Video: 3g2 3gp asf avi m4v mkv mov mp4 nsv rm roq vob webm

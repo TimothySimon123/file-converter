@@ -22,7 +22,7 @@ pdftoppm -singlefile -jpeg "$1" "$(echo "$2" | sed 's/\.jpg-OnlyFirstPage$//g')"
 }
 
 yad_show_info() {
-    yad --image "info" --title "$TITLE" --center --width=360 --height=240 --text="$@"
+    yad --image=tap-create --title "$TITLE" --center --width=360 --height=240 --text="$@"
 }
 
 yad_show_error_incompatible_format() {
@@ -98,9 +98,9 @@ fi
 
 # Remove the "file://" in front
 # TODO: Support mtp:// , smb:// etc.,
-filelist=$(yad --title="$TITLE" --image="info" --center \
+filelist=$(yad --title="$TITLE" --image=tap-create --center \
     --width=360 --height=240 \
-    --text "Welcome to file-converter version ${APP_VERSION}\n\nPlease DRAG AND DROP files here , then CLICK OK\n\nYou need not do anything in the terminal that just came up." \
+    --text "Welcome to file-converter version ${APP_VERSION}\n\n<b>Please DRAG AND DROP files here , then CLICK OK<b>\n\nYou need not do anything in the terminal that just came up." --text-align=center \
     --button=gtk-ok:0 \
     --dnd \
     --cmd echo "$1" | sed 's/^file\:\/\///' )
@@ -239,7 +239,7 @@ done < <(echo "$IN_FORMATS")
 
 FILE_COUNT="$(echo "$filelist" | wc -l)"
 
-RESP=$(yad --title="$TITLE" --image="info" --center --width=360 --height=240 \
+RESP=$(yad --title="$TITLE" --image=tap-create --center --width=360 --height=240 \
                 --form --field="Output format:CB" "$AVAILABLE_OUT_FORMATS" \
                 --text="$FILE_COUNT files will be converted. \n Press OK to proceed" || echo "EXIT NOW")
 
@@ -257,7 +257,7 @@ fi
 # cd to $HOME before showing folder selection dialog.
 # Otherwise, it opens this app's directory to choose folders.
 cd "$HOME"
-dest_dir=$(yad --title="$TITLE" --image="info" --center \
+dest_dir=$(yad --title="$TITLE" --image=tap-create --center \
     --text="\nPlease choose the DESTINATION FOLDER\n" \
     --width=600 --height=400 \
     --file --directory || echo "EXIT NOW")

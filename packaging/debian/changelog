@@ -1,0 +1,12 @@
+file-converter (0.2-beta) unstable; urgency=low
+
+  * Second release.
+  * Added a progress bar, updated function naming conventions.
+
+ -- Timothy Simon <timothysimon@tutanota.com>  Mon, 20 Sep 2021 03:53:00 -0530
+
+file-converter (0.1-alpha) unstable; urgency=low
+
+  * Initial release.
+
+ -- Timothy Simon <timothysimon@tutanota.com>  Sat, 18 Sep 2021 14:52:00 -0530
