@@ -27,7 +27,6 @@ yad_show_info() {
 
 yad_show_error_incompatible_format() {
 yad_show_info 'Please use supported and compatible formats.
-
 These formats and their equivalents are supported:
  1) PDF
  2) Images: jpg png tiff bmp heic
@@ -60,6 +59,33 @@ progress-bar-monitor_progress() {
     # Ensure that the progress bar closes if /tmp/file-converter-progress-bar is removed.
     echo "100"
     echo ""
+}
+
+file-converter-get_filelist() {
+# Remove the "file://" in front
+# TODO: Support mtp:// , smb:// etc.,
+filelist=$(yad --title="$TITLE" --image=tap-create --center \
+    --width=360 --height=240 \
+    --text="Welcome to file-converter version ${APP_VERSION}\n\n<b>Please DRAG AND DROP files here , then CLICK OK</b>\n\nYou need not do anything in the terminal that just came up." --text-align=center \
+    --button=gtk-ok \
+    --dnd \
+    --cmd echo "$1" | sed 's/^file\:\/\///' )
+
+# I think Drag-N-Drop is better than file selection (for multiple files) because we can:
+#  1) Select files from different folders.
+#  2) Use preferred file manager.
+#  3) Use a "Find" utility (both in the file manager / others like Catfish).
+
+# Remove duplicate from the dragged and dropped files.
+filelist="$(echo "$filelist" | sort -u)"
+
+# If we didn't select any file, show a message.
+# On clicking OK , show the file selection dialog again.
+# On clicking Cancel, exit now.
+if [ -z "$filelist" ] ; then
+    yad_show_info "You have not selected any files." || exit 1
+    file-converter-get_filelist
+fi
 }
 
 echo ""
@@ -96,27 +122,7 @@ if ! which x-terminal-emulator > /dev/null ; then
     exit 1
 fi
 
-# Remove the "file://" in front
-# TODO: Support mtp:// , smb:// etc.,
-filelist=$(yad --title="$TITLE" --image=tap-create --center \
-    --width=360 --height=240 \
-    --text "Welcome to file-converter version ${APP_VERSION}\n\n<b>Please DRAG AND DROP files here , then CLICK OK</b>\n\nYou need not do anything in the terminal that just came up." --text-align=center \
-    --button=gtk-ok:0 \
-    --dnd \
-    --cmd echo "$1" | sed 's/^file\:\/\///' )
-
-# I think Drag-N-Drop is better than file selection (for multiple files) because we can:
-#  1) Select files from different folders.
-#  2) Use preferred file manager.
-#  3) Use a "Find" utility (both in the file manager / others like Catfish).
-
-# Remove duplicate from the dragged and dropped files.
-filelist="$(echo "$filelist" | sort -u)"
-
-if [ -z "$filelist" ] ; then
-    yad_show_info "You have not selected any files.\n Please run again."
-    exit 1
-fi
+file-converter-get_filelist
 
 # Accept only valid filenames
 while read file ; do
@@ -310,6 +316,9 @@ while read file ; do
         FILE_NUM=$((${FILE_NUM}+1))
     done
     
+    # If the yad progress bar is closed, exit now.
+    ps -aux | grep -i "yad" | grep -i "progress" | grep -v "grep" > /dev/null || exit 1
+    
     echo ""
     echo "Converting $file ....."
     
@@ -341,15 +350,21 @@ done < <(echo "$filelist")
 rm -f /tmp/file-converter-progress-bar
 
 # Show message for success / failure
-if [ "$SUCCESS_COUNT" != "$FILE_COUNT" ] ; then
-    yad_show_info "Error. Could not convert all files.\n Error log is at $dest_dir/file-converter-errors.log"
+if [ "$SUCCESS_COUNT" = "$FILE_COUNT" ] ; then
+    yad --image=tap-create --title "$TITLE" --center --width=360 --height=240 \
+        --text="<b>Success - all the files have been converted.</b> \nPress 'View' to view them." \
+        --button=View \
+        --button=gtk-close || exit 0
     xdg-open "$dest_dir" &
     sleep 1 # Wait for the file manager to open
-else
-    yad_show_info "Success - all the files have been converted.\n Press OK to see them." || exit 0
-    xdg-open "$dest_dir" &
-    sleep 1
     exit 0
+else
+    yad --image=tap-create --title "$TITLE" --center --width=360 --height=240 \
+        --text="<b>Error. Could not convert all files.</b>\n Error log is at $dest_dir/file-converter-errors.log" \
+        --button=OK \
+        --button=gtk-close || exit 1
+    xdg-open "$dest_dir" &
+    sleep 1 # Wait for the file manager to open
 fi
 
 exit 1
