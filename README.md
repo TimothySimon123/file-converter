@@ -12,7 +12,7 @@ These formats and their equivalents are supported:
    - Can be converted (page-by-page) to jpg, png, tiff (Uses pdftoppm).
    - Can also be converted to a jpg containing only the first page (Uses pdftoppm).
    - Can be converted to html , odg (Uses LibreOffice).
-2) Documents: pdf docx xlsx pptx odt ods odp odg odf odb doc ppt rtf xls epub html slk csv txt xml dif eps mml .... etc.,
+2) Documents: pdf docx xlsx pptx odt ods odp odg odf odb doc ppt rtf xls epub html slk csv txt xml mml .... etc.,
    - All formats and conversions supported by LibreOffice.
    - Uses LibreOffice
 4) Images: jpg png gif tiff bmp heic ico webp
