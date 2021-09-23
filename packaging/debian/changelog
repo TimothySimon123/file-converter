@@ -1,3 +1,13 @@
+file-converter (0.3-beta) unstable; urgency=low
+
+  * Third release.
+  * Added document file support.
+  * Added option to extract audio from video.
+  * Use icon provided by @ Amigo from the MX Linux Forum
+  * Use ffmpeg instead of sox for Audio file conversion.
+  
+ -- Timothy Simon <timothysimon@tutanota.com>  Thu, 23 Sep 2021 11:02:39 PM IST
+ 
 file-converter (0.2-beta) unstable; urgency=low
 
   * Second release.
