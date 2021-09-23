@@ -26,3 +26,7 @@ License: GPL-3.0
 Files: /debian/*
     Copyright (C) 2021 SwampRabbit <swamprabbit@mxlinux.org>
 License: GPL-3.0
+
+Files: file-converter.png
+    Copyright (C) 2021 @ Amigo from the MX Linux Forum.
+License: GPL-3.0
