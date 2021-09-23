@@ -25,8 +25,8 @@ These formats and their equivalents are supported:
    - Any of these can be interconverted
    - Uses ffmpeg
 
-Download latest beta version at https://github.com/TimothySimon123/file-converter/releases/tag/beta-release
+Download latest beta version at https://github.com/TimothySimon123/file-converter/releases/tag/0.3-beta
 
-AppImage: https://github.com/TimothySimon123/file-converter/releases/download/beta-release/file-converter-0.2-beta-x86_64.AppImage
+AppImage: https://github.com/TimothySimon123/file-converter/releases/download/0.3-beta/file-converter-0.3-beta-x86_64.AppImage
 
-deb: https://github.com/TimothySimon123/file-converter/releases/download/beta-release/file-converter-0.2-beta.deb
+deb: https://github.com/TimothySimon123/file-converter/releases/download/0.3-beta/file-converter-0.3-beta.deb
